@@ -1,1 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escola Bíblica</title>
 
+<link rel="manifest" href="manifest.json">
+
+<style>
+body {
+    font-family: Arial;
+    padding: 20px;
+    background-color: #f0f2f5;
+}
+
+h2 {
+    text-align: center;
+}
+
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    background-color: #2e7d32;
+    color: white;
+    font-weight: bold;
+}
+
+.aluno {
+    background: white;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+}
+
+.relatorio {
+    margin-top: 20px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>📖 Escola Bíblica</h2>
+
+<input type="date" id="data">
+<input type="text" id="nome" placeholder="Nome do aluno">
+
+<label>
+<input type="checkbox" id="presente"> Presente
+</label>
+
+<button onclick="salvar()">Salvar</button>
+
+<div id="lista"></div>
+<div class="relatorio" id="relatorio"></div>
+
+<script>
+const cargos = {
+"davi souza":"Pastor",
+"antônio henrique":"Pastor / Professor",
+"jose de souza":"Pastor",
+"jefferson":"Diácono / Professor",
+"ademilson":"Diácono",
+"lucas oliveira":"Obreiro",
+"maurício josé":"Obreiro",
+"murillo":"Membro",
+"sonia pereira":"Membro",
+"sônia souza":"Membro",
+"ancelmo":"Membro",
+"josilene":"Membro",
+"guilherme":"Membro",
+"lilia":"Membro",
+"débora":"Membro",
+"antônio":"Membro",
+"isabela":"Membro",
+"neide":"Membro",
+"erick":"Membro"
+};
+
+let alunos = JSON.parse(localStorage.getItem("alunos")) || [];
+
+function salvar(){
+let data = document.getElementById("data").value;
+let nomeOriginal = document.getElementById("nome").value.trim();
+let nome = nomeOriginal.toLowerCase();
+let presente = document.getElementById("presente").checked;
+
+if(nomeOriginal===""||data===""){
+alert("Preencha nome e data");
+return;
+}
+
+let cargo = cargos[nome] || "Visitante";
+
+alunos.push({data,nomeOriginal,cargo,presente});
+localStorage.setItem("alunos",JSON.stringify(alunos));
+
+document.getElementById("nome").value="";
+document.getElementById("presente").checked=false;
+
+mostrar();
+}
+
+function mostrar(){
+let lista=document.getElementById("lista");
+lista.innerHTML="";
+let p=0,f=0;
+
+alunos.forEach((a,i)=>{
+let status=a.presente?"✅ Presente":"❌ Faltou";
+if(a.presente)p++;else f++;
+
+lista.innerHTML+=`
+<div class="aluno">
+<strong>${a.nomeOriginal}</strong><br>
+📅 ${a.data}<br>
+Cargo: ${a.cargo}<br>
+${status}
+</div>`;
+});
+
+document.getElementById("relatorio").innerHTML=
+`📊 Presentes: ${p} | Faltas: ${f} | Total: ${alunos.length}`;
+}
+
+mostrar();
+
+// registrar service worker
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
